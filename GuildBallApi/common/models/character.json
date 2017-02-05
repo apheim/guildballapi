@@ -1,0 +1,85 @@
+{
+  "name": "Character",
+  "plural": "Characters",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "MeleeZone": {
+      "type": "number",
+      "required": true
+    },
+    "Jog": {
+      "type": "number"
+    },
+    "TAC": {
+      "type": "number",
+      "required": true
+    },
+    "KickDice": {
+      "type": "number",
+      "required": true
+    },
+    "KickLength": {
+      "type": "number",
+      "required": true
+    },
+    "Defense": {
+      "type": "number",
+      "required": true
+    },
+    "Armor": {
+      "type": "number",
+      "required": true
+    },
+    "InfluenceStart": {
+      "type": "number",
+      "required": true
+    },
+    "InfluenceMax": {
+      "type": "number",
+      "required": true
+    },
+    "IconUrl": {
+      "type": "string"
+    },
+    "Health": {
+      "type": "number",
+      "required": true
+    },
+    "IcySponge": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "character_team": {
+      "type": "hasOne",
+      "model": "Team"
+    },
+    "character_playbookcolumns": {
+      "type": "hasMany",
+      "model": "PlaybookColumn",
+      "foreignKey": "CharacterId"
+    },
+    "character_characterplays": {
+      "type": "hasMany",
+      "model": "CharacterPlay",
+      "foreignKey": "CharacterId"
+    },
+    "character_charactertraits": {
+      "type": "hasMany",
+      "model": "CharacterTrait",
+      "foreignKey": "CharacterId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

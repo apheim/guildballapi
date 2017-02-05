@@ -1,0 +1,25 @@
+{
+  "name": "PlaybookResult",
+  "plural": "PlaybookResults",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "Momentous": {
+      "type": "boolean",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "playbookresult_playbookresultactions": {
+      "type": "hasMany",
+      "model": "PlaybookResultAction",
+      "foreignKey": "PlaybookResultId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

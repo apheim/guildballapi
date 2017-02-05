@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+  "User": {
+    "dataSource": "db"
+  },
+  "AccessToken": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ACL": {
+    "dataSource": "db",
+    "public": false
+  },
+  "RoleMapping": {
+    "dataSource": "db",
+    "public": false
+  },
+  "Role": {
+    "dataSource": "db",
+    "public": false
+  },
+  "Message": {
+    "dataSource": null
+  },
+  "Team": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Character": {
+    "dataSource": "db",
+    "public": true
+  },
+  "PlaybookColumn": {
+    "dataSource": "db",
+    "public": true
+  },
+  "CharacterPlay": {
+    "dataSource": "db",
+    "public": true
+  },
+  "CharacterTrait": {
+    "dataSource": "db",
+    "public": true
+  },
+  "PlaybookResult": {
+    "dataSource": "db",
+    "public": true
+  },
+  "PlaybookResultAction": {
+    "dataSource": "db",
+    "public": true
+  },
+  "PlaybookAction": {
+    "dataSource": "db",
+    "public": true
+  }
+}

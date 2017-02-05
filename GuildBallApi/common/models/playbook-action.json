@@ -1,0 +1,34 @@
+{
+  "name": "PlaybookAction",
+  "plural": "PlaybookActions",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "IconUrl": {
+      "type": "string"
+    },
+    "Damage": {
+      "type": "boolean"
+    },
+    "DamageValue": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "playbookactions_playbookresultaction": {
+      "type": "hasMany",
+      "model": "PlaybookResultAction",
+      "foreignKey": "PlaybookActionId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
