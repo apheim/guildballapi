@@ -2,9 +2,10 @@ var fs = require('fs');
 var http = require('http');
 var parse = require('csv-parse');
 var async = require('async');
+var rp = require('request-promise');
+var Promise = require('promise');
 
 module.exports = function(){
-  console.log("starting");
   var inputFile = 'characters.csv';
   var COLUMNS = {
     NAME: 0,
@@ -35,125 +36,123 @@ module.exports = function(){
 
 
 var getTeam = function(teamName, onSuccess) {
-        var options = {
-          host: "localhost",
-          port: 3000,
-          path: "/api/teams?filter[where][Name]=" + teamName,
-          method: 'GET'
-        };
+  return new Promise(function (resolve, reject) {
+    console.log("Retrieving Team " + teamName);
+    var options = {
+        uri: 'http://localhost:3000/api/Teams?filter[where][Name]=' + teamName,
+        headers: {
+            'User-Agent': 'Request-Promise'
+        },
+        json: true // Automatically parses the JSON string in the response
+    };
 
-        http.get(options, function(res){
-          var bodyChunks = [];
-          res.on('data', function(chunk) {
-            bodyChunks.push(chunk);
-          }).on('end', function() {
-
-            var body = Buffer.concat(bodyChunks);
-
-            console.log('BODY: ' + body);
-            if(bodyChunks)
-              onSuccess(JSON.parse(bodyChunks)[0]);
-          })
-        }).end();
-
+    rp(options)
+        .then(function (teams) {
+           console.log("Succesfully Retrieved Team " + teams);
+           resolve(teams[0]);
+        })
+        .catch(function (err) {
+            console.log("Error Retrieving team " + teamName);
+            reject(err);
+        });
+    });
 };
 
 function getPlaybookActions(onSuccess){
+  return new Promise(function (resolve, reject) {
     var options = {
-      host: "localhost",
-      port: 3000,
-      path: "/api/PlaybookActions",
-      method: 'GET'
+        uri: 'http://localhost:3000/api/PlaybookActions',
+        headers: {
+            'User-Agent': 'Request-Promise'
+        },
+        json: true // Automatically parses the JSON string in the response
     };
 
-    http.get(options, function(res){
-      var bodyChunks = [];
-      res.on('data', function(chunk) {
-        bodyChunks.push(chunk);
-      }).on('end', function() {
-
-        var body = Buffer.concat(bodyChunks);
-        if(bodyChunks)
-          onSuccess(JSON.parse(bodyChunks));
-      })
-    }).end();
-
+    rp(options)
+        .then(function (a) {
+           console.log("test");
+           resolve(a);
+        })
+        .catch(function (err) {
+            console.log(err);
+            reject(err);
+        });
+    });
   };
 
   function createPlaybookColumn(col, onSuccess){
-    col = JSON.stringify(col);
+    return new Promise(function (resolve, reject) {
+      console.log("create column: " + col);
 
-    var createOptions = {
-      host: "localhost",
-      port: 3000,
-      path: "/api/PlaybookColumns",
-      method: 'POST',
-      headers: {
-       "Content-Type": "application/json",
-       "Content-Length": Buffer.byteLength(col)
-     }
-    };
+      var options = {
+          method: 'POST',
+          uri: 'http://localhost:3000/api/PlaybookColumns',
+          headers: {
+              'User-Agent': 'Request-Promise'
+          },
+          body: col,
+          json: true // Automatically parses the JSON string in the response
+      };
 
-
-    var postreq = http.request(createOptions, function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-        onSuccess(JSON.parse(chunk));
+      rp(options)
+          .then(function (column) {
+            console.log("Succesfully Created " + column);
+             resolve(column);
+          })
+          .catch(function (err) {
+              console.log(err);
+              reject(err);
+          });
       });
-    });
-    postreq.write(col);
-    postreq.end();
   };
 
   function createPlaybookResult(result, onSuccess){
-    result = JSON.stringify(result);
+    return new Promise(function (resolve, reject) {
+      console.log("create result");
 
-    var createOptions = {
-      host: "localhost",
-      port: 3000,
-      path: "/api/PlayBookResults",
-      method: 'POST',
-      headers: {
-       "Content-Type": "application/json",
-       "Content-Length": Buffer.byteLength(result)
-     }
-    };
+      var options = {
+          uri: 'http://localhost:3000/api/PlayBookResults',
+          headers: {
+              'User-Agent': 'Request-Promise'
+          },
+          body: result,
+          json: true // Automatically parses the JSON string in the response
+      };
 
-
-    var postreq = http.request(createOptions, function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-        onSuccess(JSON.parse(chunk));
+      rp(options)
+          .then(function (result) {
+             resolve(result);
+          })
+          .catch(function (err) {
+              console.log(err);
+              reject(err);
+          });
       });
-    });
-
-    postreq.write(result);
-    postreq.end();
   }
 
   function createPlaybookResultAction(action){
-    action = JSON.stringify(action);
-    var createOptions = {
-      host: "localhost",
-      port: 3000,
-      path: "/api/PlayBookResultActions",
-      method: 'POST',
-      headers: {
-       "Content-Type": "application/json",
-       "Content-Length": Buffer.byteLength(action)
-     }
-    };
+    return new Promise(function (resolve, reject) {
+      console.log("create result action");
 
+      var options = {
+          uri: 'http://localhost:3000/api/PlayBookResultActions',
+          headers: {
+              'User-Agent': 'Request-Promise'
+          },
+          body: action,
+          json: true // Automatically parses the JSON string in the response
+      };
 
-    var postreq = http.request(createOptions, function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-        onSuccess(JSON.parse(chunk));
+      rp(options)
+          .then(function (action) {
+             resolve(action);
+          })
+          .catch(function (err) {
+            console.log(err);
+
+              reject(err);
+          });
       });
-    });
-
-    postreq.write(action);
-    postreq.end();
   }
 
   function getActionId(playbookactions, name){
@@ -168,7 +167,7 @@ function getPlaybookActions(onSuccess){
     createPlaybookResult({
       Momentous : momentous,
       PlaybookColumnId: columnId
-    },
+    }.then(
     function(playbookResultRecord){
       var order = 0;
       for(var i = 0; i < result.length; i++){
@@ -222,8 +221,7 @@ function getPlaybookActions(onSuccess){
           order++;
         }
       }
-    });
-
+    }));
   };
 
 
@@ -233,9 +231,7 @@ function getPlaybookActions(onSuccess){
     createPlaybookColumn({
        ColumnNumber: columnNumber,
        CharacterId: characterId
-    }, function(columnRecord){
-      console.log(results);
-
+    }).then(function(columnRecord){
         var resultSplit = ("" + results).split(',');
         console.log(resultSplit);
         resultSplit.forEach(function(result){
@@ -254,9 +250,9 @@ function getPlaybookActions(onSuccess){
             return;
           }
 
-          getTeam(line[COLUMNS.TEAM], function(team){
+          getTeam(line[COLUMNS.TEAM]).then(function(team){
             console.log(team);
-            var body = JSON.stringify({
+            var character = JSON.stringify({
               "Name": line[COLUMNS.NAME],
               "MeleeZone": line[COLUMNS.MELEEZONE],
               "Jog": line[COLUMNS.JOG],
@@ -274,40 +270,36 @@ function getPlaybookActions(onSuccess){
               "TeamId": team.id
             });
 
-            var createOptions = {
-              host: "localhost",
-              port: 3000,
-              path: "/api/characters",
-              method: 'POST',
-              headers: {
-               "Content-Type": "application/json",
-               "Content-Length": Buffer.byteLength(body)
-             }
+
+            var options = {
+                uri: 'http://localhost:3000/api/characters',
+                headers: {
+                    'User-Agent': 'Request-Promise'
+                },
+                body: character,
+                json: true // Automatically parses the JSON string in the response
             };
 
+            rp(options)
+                .then(function (character) {
+                  console.log("Succesfully created " + character);
 
-            var postreq = http.request(createOptions, function(res) {
-              res.on('data', function (chunk) {
-                var character = JSON.parse(chunk);
-                console.log("character created:");
-                console.log(character);
-                for(let i = 1; i < 9; i++){
-                  if(line[COLUMNS["PB" + i]])
-                    addPlaybookColumn(line[COLUMNS["PB" + i]], i, character.id, playbookactions);
-                }
-                res.setEncoding('utf8');
-                callback();
-             });
-
-            });
-
-            postreq.write(body);
-            postreq.end();
+                  for(let i = 1; i < 9; i++){
+                    if(line[COLUMNS["PB" + i]])
+                      addPlaybookColumn(line[COLUMNS["PB" + i]], i, character.id, playbookactions);
+                  }
+                  callback();
+                })
+                .catch(function (err) {
+                    console.log("Error Creating Character " + character);
+                    console.log(err);
+                    reject(err);
+                });
           });
       })
     })
     fs.createReadStream(inputFile).pipe(parser);
   }
 
-  getPlaybookActions(importCharacters);
+  getPlaybookActions().then(importCharacters);
 }

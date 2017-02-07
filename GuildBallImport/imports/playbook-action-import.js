@@ -2,6 +2,7 @@ var fs = require('fs');
 var http = require('http');
 var parse = require('csv-parse');
 var async = require('async');
+var rp = require('request-promise');
 
 module.exports = function(){
 
