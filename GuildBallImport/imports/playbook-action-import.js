@@ -3,8 +3,10 @@ var http = require('http');
 var parse = require('csv-parse');
 var async = require('async');
 var rp = require('request-promise');
+var Promise = require('promise');
 
 module.exports = function(){
+  return new Promise(function (resolve, reject) {
 
 var inputFile = 'playbookactions.csv';
 var TEAM_COLUMNS = {
@@ -18,7 +20,7 @@ let rowCount = 0;
 var parser = parse({delimiter: ',', auto_parse : true}, function (err, data) {
   async.eachSeries(data, function (line, callback) {
       if(rowCount++ == 0){
-        callback();
+        callback(null);
         return;
       }
 
@@ -44,13 +46,13 @@ var parser = parse({delimiter: ',', auto_parse : true}, function (err, data) {
       var postreq = http.request(options, function(res) {
         console.log("return");
         res.setEncoding('utf8');
-        callback();
+        callback(null);
       });
 
       postreq.write(body);
       postreq.end();
-  })
-})
+  }, resolve)
+});
 fs.createReadStream(inputFile).pipe(parser);
-
+});
 };

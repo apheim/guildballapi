@@ -111,6 +111,7 @@ function getPlaybookActions(onSuccess){
       console.log("create result");
 
       var options = {
+          method: 'POST',
           uri: 'http://localhost:3000/api/PlayBookResults',
           headers: {
               'User-Agent': 'Request-Promise'
@@ -135,6 +136,7 @@ function getPlaybookActions(onSuccess){
       console.log("create result action");
 
       var options = {
+          method: 'POST',
           uri: 'http://localhost:3000/api/PlayBookResultActions',
           headers: {
               'User-Agent': 'Request-Promise'
@@ -156,23 +158,35 @@ function getPlaybookActions(onSuccess){
   }
 
   function getActionId(playbookactions, name){
+    console.log("searching for action " + name);
+    var actionId = null;
     playbookactions.forEach(function(action){
-      if(action.Name == name)
-        return action.id;
+      if(action.Name == name){
+        console.log("found action");
+        console.log(JSON.stringify(action));
+        actionId = action.id;
+      }
     });
+
+    return actionId;
   };
 
   function addPlaybookColumnResult(result, columnId, playbookactions){
+    console.log("Adding Playbook Column Result");
+
     var momentous = result[0] == 'm';
     createPlaybookResult({
       Momentous : momentous,
       PlaybookColumnId: columnId
-    }.then(
+    }).then(
     function(playbookResultRecord){
+      console.log("Created Playbook Result");
       var order = 0;
       for(var i = 0; i < result.length; i++){
         var r = result[i];
-        var actionId = null;
+        let actionId = null;
+        console.log("Finding Result " + r)
+        console.log(playbookactions);
         switch (r) {
           case 'm':
             continue;
@@ -209,35 +223,39 @@ function getPlaybookActions(onSuccess){
               actionId = getActionId(playbookactions, "Character Play 2");
             }
             break;
-          default:
-
         }
+        console.log(actionId);
         if(actionId){
+          console.log("Creating Result Action");
           createPlaybookResultAction({
             Order: order,
-            PlaybookResultId: playbookResultRecord.Id,
-            PlaybookActionId: Id
+            PlaybookResultId: playbookResultRecord.id,
+            PlaybookActionId: actionId
           })
           order++;
         }
+        else {
+          console.log("No Result Found");
+
+        }
       }
-    }));
+    });
   };
 
 
   function addPlaybookColumn(results, columnNumber, characterId, playbookactions){
     if(results){
-      console.log(results);
-    createPlaybookColumn({
-       ColumnNumber: columnNumber,
-       CharacterId: characterId
-    }).then(function(columnRecord){
-        var resultSplit = ("" + results).split(',');
-        console.log(resultSplit);
-        resultSplit.forEach(function(result){
-          addPlaybookColumnResult(result, columnRecord.id, playbookactions);
-        });
-    });
+      console.log("Creating Column for " + characterId);
+      createPlaybookColumn({
+         ColumnNumber: columnNumber,
+         CharacterId: characterId
+      }).then(function(columnRecord){
+          var resultSplit = ("" + results).split(',');
+          console.log(resultSplit);
+          resultSplit.forEach(function(result){
+            addPlaybookColumnResult(result, columnRecord.id, playbookactions);
+          });
+      });
   }
   };
 
@@ -252,7 +270,7 @@ function getPlaybookActions(onSuccess){
 
           getTeam(line[COLUMNS.TEAM]).then(function(team){
             console.log(team);
-            var character = JSON.stringify({
+            var character = {
               "Name": line[COLUMNS.NAME],
               "MeleeZone": line[COLUMNS.MELEEZONE],
               "Jog": line[COLUMNS.JOG],
@@ -268,10 +286,10 @@ function getPlaybookActions(onSuccess){
               "Health": line[COLUMNS.HEALTH],
               "IcySponge": line[COLUMNS.ICYSPONGE],
               "TeamId": team.id
-            });
-
+            };
 
             var options = {
+                method: 'POST',
                 uri: 'http://localhost:3000/api/characters',
                 headers: {
                     'User-Agent': 'Request-Promise'
@@ -282,7 +300,7 @@ function getPlaybookActions(onSuccess){
 
             rp(options)
                 .then(function (character) {
-                  console.log("Succesfully created " + character);
+                  console.log("Succesfully created " + JSON.stringify(character));
 
                   for(let i = 1; i < 9; i++){
                     if(line[COLUMNS["PB" + i]])
@@ -293,7 +311,6 @@ function getPlaybookActions(onSuccess){
                 .catch(function (err) {
                     console.log("Error Creating Character " + character);
                     console.log(err);
-                    reject(err);
                 });
           });
       })

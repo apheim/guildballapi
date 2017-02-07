@@ -14,7 +14,16 @@
   },
   "validations": [],
   "relations": {
-
+    "Action": {
+      "type": "hasOne",
+      "model": "PlaybookAction",
+      "foreignKey": "id"
+    },
+    "Result": {
+      "type": "hasOne",
+      "model": "PlaybookResult",
+      "foreignKey": "id"
+    }
   },
   "acls": [],
   "methods": {}
