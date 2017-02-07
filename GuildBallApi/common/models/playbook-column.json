@@ -12,7 +12,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "playbookcolumn_playbookresults": {
+      "type": "hasMany",
+      "model": "PlaybookResult",
+      "foreignKey": "PlaybookColumnId"
+    }
+  },
   "acls": [],
   "methods": {}
 }
