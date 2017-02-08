@@ -1,56 +1,36 @@
 var fs = require('fs');
-var http = require('http');
-var parse = require('csv-parse');
 var async = require('async');
 var Promise = require('promise');
+var rp = require('request-promise');
 
-module.exports = function() {
+module.exports = function(url, teams) {
     return new Promise(function(resolve, reject) {
-        var inputFile = 'teams.csv';
-        var TEAM_COLUMNS = {
-            NAME: 0,
-            ICONURL: 1
-        }
-        let rowCount = 0;
-
-        var parser = parse({
-            delimiter: ',',
-            auto_parse: true
-        }, function(err, data) {
-            async.eachSeries(data, function(line, callback) {
-                if (rowCount++ == 0) {
-                    callback(null);
-                    return;
-                }
-
-                var body = JSON.stringify({
-                    Name: line[TEAM_COLUMNS.NAME],
-                    IconUrl: line[TEAM_COLUMNS.ICONURL]
-                });
-
+            let dataImported = 0;
+            teams.forEach(function(data) {
                 var options = {
-                    host: "localhost",
-                    port: 3000,
-                    path: "/api/teams",
                     method: 'POST',
+                    uri: url + '/api/Teams',
                     headers: {
-                        "Content-Type": "application/json",
-                        "Content-Length": Buffer.byteLength(body)
+                        'User-Agent': 'Request-Promise'
+                    },
+                    json: true,
+                    body: {
+                        Name: data.Name,
+                        IconUrl: data.IconURL
                     }
                 };
 
-
-                var postreq = http.request(options, function(res) {
-                    console.log("return");
-                    res.setEncoding('utf8');
-                    callback(null);
-                });
-
-                postreq.write(body);
-                postreq.end();
-            }, resolve)
-        });
-
-        fs.createReadStream(inputFile).pipe(parser);
+                rp(options)
+                    .then(function(team) {
+                        console.log("Succesfully Created Team " + team);
+                        if (++dataImported == teams.length){
+                          resolve();
+                        }
+                    })
+                    .catch(function(err) {
+                        console.log("Error Creating Team " + err);
+                        reject(err);
+                    });
+            });
     });
 };
