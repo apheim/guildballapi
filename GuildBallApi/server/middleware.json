@@ -41,12 +41,17 @@
     }
   },
   "files": {
-    "loopback#static": {
+    "loopback#static": [{
       "paths": [
         "/assets"
       ],
       "params": "$!../assets"
-    }
+    },
+    {
+        "name": "examples",
+        "paths": ["/examples"],
+        "params": "$!../examples"
+    }]
   },
   "final": {
     "loopback#urlNotFound": {}

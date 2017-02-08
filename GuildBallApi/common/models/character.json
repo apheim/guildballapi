@@ -56,25 +56,30 @@
     "IcySponge": {
       "type": "number",
       "required": true
+    },
+    "TeamId":{
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],
   "relations": {
-    "character_team": {
-      "type": "hasOne",
-      "model": "Team"
+    "Team": {
+      "type": "belongsTo",
+      "model": "Team",
+      "foreignKey": "TeamId"
     },
-    "character_playbookcolumns": {
+    "PlayBookColumns": {
       "type": "hasMany",
       "model": "PlaybookColumn",
       "foreignKey": "CharacterId"
     },
-    "character_characterplays": {
+    "CharacterPlays": {
       "type": "hasMany",
       "model": "CharacterPlay",
       "foreignKey": "CharacterId"
     },
-    "character_charactertraits": {
+    "CharacterTraits": {
       "type": "hasMany",
       "model": "CharacterTrait",
       "foreignKey": "CharacterId"

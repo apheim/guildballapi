@@ -13,7 +13,8 @@ var TEAM_COLUMNS = {
   NAME: 0,
   ICONURL: 1,
   DAMAGE: 2,
-  DAMAGEVALUE: 3
+  DAMAGEVALUE: 3,
+  ABBREVIATION: 4
 }
 let rowCount = 0;
 
@@ -28,7 +29,8 @@ var parser = parse({delimiter: ',', auto_parse : true}, function (err, data) {
           Name: line[TEAM_COLUMNS.NAME],
           IconUrl: line[TEAM_COLUMNS.ICONURL],
           Damage: line[TEAM_COLUMNS.DAMAGE],
-          DamageValue: line[TEAM_COLUMNS.DAMAGEVALUE]
+          DamageValue: line[TEAM_COLUMNS.DAMAGEVALUE],
+          Abbreviation:  line[TEAM_COLUMNS.ABBREVIATION]
       });
 
       var options = {

@@ -18,11 +18,7 @@
   },
   "validations": [],
   "relations": {
-    "team_characters": {
-      "type": "hasMany",
-      "model": "Character",
-      "foreignKey": "TeamId"
-    }
+
   },
   "acls": [],
   "methods": {}

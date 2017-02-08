@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Guild Ball API Show Character Example</title>
+      <link rel="stylesheet" href="showCharacter.css">
+      <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/css/tether.min.css" />
+  </head>
+  <body>
+    <div class="dropdown">
+      <button data-bind="text: selectedCharacter() ?  selectedCharacter().Name : 'Pick Character'" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" data-bind="foreach: { data: characters, as: 'character' } ">
+        <li><a href="#" data-bind="text:character.Name, click: function(){$root.selectCharacter(character)}"></a></li>
+      </ul>
+    </div>
+
+    <div data-bind="if: selectedCharacterData">
+      <div data-bind="with:selectedCharacterData()">
+        <h1 data-bind="html:Name"></h1>
+        <table class="table table-bordered">
+          <tr><th>MOV</th><th>TAC</th><th>KICK</th><th>DEF</th><th>ARM</th><th>INF</th><th>Melee</th><th>Health</th><th>Icy Sponge</th></tr>
+          <tr>
+            <td data-bind="html: Jog + '/' + Sprint"></td>
+            <td data-bind="html: TAC"></td>
+            <td data-bind="html: KickDice + '/' + KickLength"></td>
+            <td data-bind="html: Defense"></td>
+            <td data-bind="html: Armor"></td>
+            <td data-bind="html: InfluenceStart + '/' + InfluenceMax"></td>
+            <td data-bind="html: MeleeZone"></td>
+            <td data-bind="html: Health"></td>
+            <td data-bind="html: IcySponge"></td>
+          </tr>
+        </table>
+
+        <h2>Playbook</h2>
+          <div data-bind="foreach: PlayBookColumns">
+          <!-- <span data-bind="html: ColumnNumber"></span> -->
+            <div class="playbook-column" data-bind="foreach: PlaybookResults">
+              <div class="playbook-result" data-bind="css: { momentous: Momentous }, foreach: PlaybookResultActions">
+                <span class="playbook-result-action" data-bind="html:Action.Abbreviation"></span>
+              </div>
+            </div>
+          </div>
+        </table>
+    </div>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-min.js"></script>
+  <script src="showCharacter.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+  <script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+</html>

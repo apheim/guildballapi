@@ -14,7 +14,7 @@
   },
   "validations": [],
   "relations": {
-    "playbookresult_playbookresultactions": {
+    "PlaybookResultActions": {
       "type": "hasMany",
       "model": "PlaybookResultAction",
       "foreignKey": "PlaybookResultId"

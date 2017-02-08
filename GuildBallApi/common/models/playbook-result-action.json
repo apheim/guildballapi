@@ -10,19 +10,22 @@
     "Order": {
       "type": "number",
       "required": true
+    },
+    "PlaybookActionId":{
+      "type": "number",
+      "required": true
+    },
+    "PlaybookResultId":{
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],
   "relations": {
     "Action": {
-      "type": "hasOne",
+      "type": "belongsTo",
       "model": "PlaybookAction",
-      "foreignKey": "id"
-    },
-    "Result": {
-      "type": "hasOne",
-      "model": "PlaybookResult",
-      "foreignKey": "id"
+      "foreignKey": "PlaybookActionId"
     }
   },
   "acls": [],

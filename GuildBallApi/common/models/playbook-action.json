@@ -19,6 +19,9 @@
     },
     "DamageValue": {
       "type": "number"
+    },
+    "Abbreviation":{
+      "type": "string"
     }
   },
   "validations": [],
