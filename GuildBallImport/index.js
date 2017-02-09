@@ -12,7 +12,6 @@ Tabletop.init({
         var characters = tabletop.models.Characters.all();
 
         teamImport(url, teams).then(function(){
-          console.log("teams created");
           playBookActionImport(url, actions).then(
             function(){
               characterImport(url, characters);

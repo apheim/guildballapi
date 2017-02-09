@@ -20,7 +20,7 @@
     "DamageValue": {
       "type": "number"
     },
-    "Abbreviation":{
+    "Abbreviation": {
       "type": "string"
     }
   },

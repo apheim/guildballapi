@@ -7,19 +7,28 @@
     "validateUpsert": true
   },
   "properties": {
-    "Name": {
-      "type": "string",
+    "CharacterId": {
+      "type": "number",
       "required": true
     },
-    "Description": {
-      "type": "string"
-    },
-    "Stipulation": {
-      "type": "string"
+    "TraitId": {
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "Character": {
+      "type": "belongsTo",
+      "model": "Character",
+      "foreignKey": "CharacterId"
+    },
+    "Trait": {
+      "type": "belongsTo",
+      "model": "Trait",
+      "foreignKey": "TraitId"
+    }
+  },
   "acls": [],
   "methods": {}
 }

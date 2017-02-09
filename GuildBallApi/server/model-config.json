@@ -66,5 +66,17 @@
   "PlaybookAction": {
     "dataSource": "db",
     "public": true
+  },
+  "Trait": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Play": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Keyword": {
+    "dataSource": "db",
+    "public": true
   }
 }

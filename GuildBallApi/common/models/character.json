@@ -57,13 +57,34 @@
       "type": "number",
       "required": true
     },
-    "TeamId":{
+    "Season": {
+      "type": "number",
+      "required": false
+    },
+    "Size": {
+      "type": "number",
+      "required": true
+    },
+    "Keywords": {
+      "type": "string",
+      "required": false
+    },
+    "TeamId": {
       "type": "number",
       "required": true
     }
   },
   "validations": [],
   "relations": {
+    "Keywords": {
+      "type": "referencesMany",
+      "model": "Keyword",
+      "property": "KeywordsIds",
+      "options": {
+        "validate": true,
+        "forceId": false
+      }
+    },
     "Team": {
       "type": "belongsTo",
       "model": "Team",
@@ -75,14 +96,22 @@
       "foreignKey": "CharacterId"
     },
     "CharacterPlays": {
-      "type": "hasMany",
-      "model": "CharacterPlay",
-      "foreignKey": "CharacterId"
+      "type": "referencesMany",
+      "model": "Play",
+      "property": "CharacterPlaysIds",
+      "options": {
+        "validate": true,
+        "forceId": false
+      }
     },
     "CharacterTraits": {
-      "type": "hasMany",
-      "model": "CharacterTrait",
-      "foreignKey": "CharacterId"
+      "type": "referencesMany",
+      "model": "Trait",
+      "property": "CharacterTraitsIds",
+      "options": {
+        "validate": true,
+        "forceId": false
+      }
     }
   },
   "acls": [],

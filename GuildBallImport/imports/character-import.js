@@ -1,45 +1,18 @@
 var fs = require('fs');
-var http = require('http');
-var parse = require('csv-parse');
 var async = require('async');
 var rp = require('request-promise');
 var Promise = require('promise');
+var async = require('async');
 
-module.exports = function(){
-  var inputFile = 'characters.csv';
-  var COLUMNS = {
-    NAME: 0,
-    TEAM: 1,
-    MELEEZONE : 2,
-    JOG: 3,
-    SPRINT: 4,
-    TAC: 5,
-    KICKDICE: 6,
-    KICKLENGTH: 7,
-    DEFENSE: 8,
-    ARMOR: 9,
-    INFLUENCESTART:10,
-    INFLUENCEMAX: 11,
-    PB1: 12,
-    PB2: 13,
-    PB3: 14,
-    PB4: 15,
-    PB5: 16,
-    PB6: 17,
-    PB7: 18,
-    PB8: 19,
-    HEALTH: 38,
-    ICYSPONGE:39
-  };
+module.exports = function(url, characters){
 
-  let rowCount = 0;
-
+var playbookactions = null;
 
 var getTeam = function(teamName, onSuccess) {
   return new Promise(function (resolve, reject) {
     console.log("Retrieving Team " + teamName);
     var options = {
-        uri: 'http://localhost:3000/api/Teams?filter[where][Name]=' + teamName,
+        uri: url + '/api/Teams?filter[where][Name]=' + teamName,
         headers: {
             'User-Agent': 'Request-Promise'
         },
@@ -58,10 +31,11 @@ var getTeam = function(teamName, onSuccess) {
     });
 };
 
+
 function getPlaybookActions(onSuccess){
   return new Promise(function (resolve, reject) {
     var options = {
-        uri: 'http://localhost:3000/api/PlaybookActions',
+        uri: url + '/api/PlaybookActions',
         headers: {
             'User-Agent': 'Request-Promise'
         },
@@ -70,7 +44,6 @@ function getPlaybookActions(onSuccess){
 
     rp(options)
         .then(function (a) {
-           console.log("test");
            resolve(a);
         })
         .catch(function (err) {
@@ -86,7 +59,7 @@ function getPlaybookActions(onSuccess){
 
       var options = {
           method: 'POST',
-          uri: 'http://localhost:3000/api/PlaybookColumns',
+          uri: url + '/api/PlaybookColumns',
           headers: {
               'User-Agent': 'Request-Promise'
           },
@@ -112,7 +85,7 @@ function getPlaybookActions(onSuccess){
 
       var options = {
           method: 'POST',
-          uri: 'http://localhost:3000/api/PlayBookResults',
+          uri: url + '/api/PlayBookResults',
           headers: {
               'User-Agent': 'Request-Promise'
           },
@@ -137,7 +110,7 @@ function getPlaybookActions(onSuccess){
 
       var options = {
           method: 'POST',
-          uri: 'http://localhost:3000/api/PlayBookResultActions',
+          uri: url + '/api/PlayBookResultActions',
           headers: {
               'User-Agent': 'Request-Promise'
           },
@@ -157,7 +130,7 @@ function getPlaybookActions(onSuccess){
       });
   }
 
-  function getActionId(playbookactions, name){
+  function getActionId(name){
     console.log("searching for action " + name);
     var actionId = null;
     playbookactions.forEach(function(action){
@@ -171,9 +144,9 @@ function getPlaybookActions(onSuccess){
     return actionId;
   };
 
-  function addPlaybookColumnResult(result, columnId, playbookactions){
+  function addPlaybookColumnResult(result, columnId){
+    return new Promise(function (resolve, reject) {
     console.log("Adding Playbook Column Result");
-
     var momentous = result[0] == 'm';
     createPlaybookResult({
       Momentous : momentous,
@@ -186,64 +159,67 @@ function getPlaybookActions(onSuccess){
         var r = result[i];
         let actionId = null;
         console.log("Finding Result " + r)
-        console.log(playbookactions);
         switch (r) {
           case 'm':
             continue;
             break;
           case 'k':
-            actionId = getActionId(playbookactions, "Knock Down");
+            actionId = getActionId("Knock Down");
             break;
           case 'p':
-            actionId = getActionId(playbookactions, "Push");
+            actionId = getActionId("Push");
             break;
           case 'd':
-            actionId = getActionId(playbookactions, "Dodge");
+            actionId = getActionId("Dodge");
             break;
           case 't':
-            actionId = getActionId(playbookactions, "Tackle");
+            actionId = getActionId("Tackle");
             break;
           case '1':
-            actionId = getActionId(playbookactions, "1 Damage");
+            actionId = getActionId("1 Damage");
             break;
           case '2':
-            actionId = getActionId(playbookactions, "2 Damage");
+            actionId = getActionId("2 Damage");
             break;
           case '3':
-            actionId = getActionId(playbookactions, "3 Damage");
+            actionId = getActionId("3 Damage");
             break;
           case '4':
-            actionId = getActionId(playbookactions, "4 Damage");
+            actionId = getActionId( "4 Damage");
             break;
           case 'g':
             if(result[i + 1] == "g"){
-              actionId = getActionId(playbookactions, "Character Play 1");
+              actionId = getActionId("Character Play 1");
               i++;
             } else {
-              actionId = getActionId(playbookactions, "Character Play 2");
+              actionId = getActionId("Character Play 2");
             }
             break;
         }
         console.log(actionId);
         if(actionId){
-          console.log("Creating Result Action");
           createPlaybookResultAction({
             Order: order,
             PlaybookResultId: playbookResultRecord.id,
             PlaybookActionId: actionId
           })
+
           order++;
         }
         else {
           console.log("No Result Found");
-
         }
       }
+
+      resolve();
     });
+  });
   };
 
 
-  function addPlaybookColumn(results, columnNumber, characterId, playbookactions){
+  function addPlaybookColumn(results, columnNumber, characterId){
+    return new Promise(function (resolve, reject) {
+
     if(results){
       console.log("Creating Column for " + characterId);
       createPlaybookColumn({
@@ -251,72 +227,346 @@ function getPlaybookActions(onSuccess){
          CharacterId: characterId
       }).then(function(columnRecord){
           var resultSplit = ("" + results).split(',');
-          console.log(resultSplit);
           resultSplit.forEach(function(result){
             addPlaybookColumnResult(result, columnRecord.id, playbookactions);
           });
+
+          resolve();
       });
-  }
+    }
+  });
   };
 
-  function importCharacters(playbookactions){
-    console.log(playbookactions);
-    var parser = parse({delimiter: ',', auto_parse : true}, function (err, data) {
-      async.eachSeries(data, function (line, callback) {
-          if(rowCount++ == 0) {
-            callback();
-            return;
-          }
+  function getCharacterPlay(name){
+    return new Promise(function (resolve, reject) {
+      var options = {
+          uri: url + '/api/Plays?filter[where][Name]=' + name,
+          headers: {
+              'User-Agent': 'Request-Promise'
+          },
+          json: true
+      };
 
-          getTeam(line[COLUMNS.TEAM]).then(function(team){
-            console.log(team);
-            var character = {
-              "Name": line[COLUMNS.NAME],
-              "MeleeZone": line[COLUMNS.MELEEZONE],
-              "Jog": line[COLUMNS.JOG],
-              "Sprint": line[COLUMNS.SPRINT],
-              "TAC": line[COLUMNS.TAC],
-              "KickDice": line[COLUMNS.KICKDICE],
-              "KickLength": line[COLUMNS.KICKLENGTH],
-              "Defense": line[COLUMNS.DEFENSE],
-              "Armor": line[COLUMNS.ARMOR],
-              "InfluenceStart": line[COLUMNS.INFLUENCESTART],
-              "InfluenceMax": line[COLUMNS.INFLUENCEMAX],
-              "IconUrl": line[COLUMNS.NAME],
-              "Health": line[COLUMNS.HEALTH],
-              "IcySponge": line[COLUMNS.ICYSPONGE],
-              "TeamId": team.id
-            };
-
-            var options = {
-                method: 'POST',
-                uri: 'http://localhost:3000/api/characters',
-                headers: {
-                    'User-Agent': 'Request-Promise'
-                },
-                body: character,
-                json: true // Automatically parses the JSON string in the response
-            };
-
-            rp(options)
-                .then(function (character) {
-                  console.log("Succesfully created " + JSON.stringify(character));
-
-                  for(let i = 1; i < 9; i++){
-                    if(line[COLUMNS["PB" + i]])
-                      addPlaybookColumn(line[COLUMNS["PB" + i]], i, character.id, playbookactions);
-                  }
-                  callback();
-                })
-                .catch(function (err) {
-                    console.log("Error Creating Character " + character);
-                    console.log(err);
-                });
+      rp(options)
+          .then(function (cps) {
+             console.log("Succesfully Retrieved CP " + name);
+             resolve(cps);
+          })
+          .catch(function (err) {
+              console.log("Error Retrieving CP " + name);
+              reject(err);
           });
-      })
-    })
-    fs.createReadStream(inputFile).pipe(parser);
+      });
+  };
+
+  function getCharacterTrait(name){
+    return new Promise(function (resolve, reject) {
+      var options = {
+          uri: url + '/api/Traits?filter[where][Name]=' + name,
+          headers: {
+              'User-Agent': 'Request-Promise'
+          },
+          json: true
+      };
+
+      rp(options)
+          .then(function (cts) {
+             console.log("Succesfully Retrieved CT " + name);
+             resolve(cts);
+          })
+          .catch(function (err) {
+              console.log("Error Retrieving CT " + name);
+              reject(err);
+          });
+      });
+  };
+
+  function createNewCharaterPlay(name, desc, cost, range, zone, sus, opt){
+    return new Promise(function (resolve, reject) {
+      var options = {
+          method: 'POST',
+          uri: url + '/api/plays',
+          headers: {
+              'User-Agent': 'Request-Promise'
+          },
+          body: {
+            Name: name,
+            Description: desc,
+            Cost: cost,
+            Range: range,
+            Zone: zone,
+            Sustain: sus,
+            OPT: opt
+          },
+          json: true // Automatically parses the JSON string in the response
+      };
+
+      rp(options)
+          .then(function (cp) {
+            console.log("Succesfully created CP " + JSON.stringify(cp));
+            resolve(cp);
+          })
+          .catch(function (err) {
+              console.log("Error Creating CP " + character);
+              console.log(err);
+              reject(err);
+          });
+      });
   }
 
-  getPlaybookActions().then(importCharacters);
+  function createNewCharaterTrait(name, desc, stip){
+    return new Promise(function (resolve, reject) {
+      var options = {
+          method: 'POST',
+          uri: url + '/api/Traits',
+          headers: {
+              'User-Agent': 'Request-Promise'
+          },
+          body: {
+            Name: name,
+            Description: desc,
+            Stipulation: stip
+          },
+          json: true // Automatically parses the JSON string in the response
+      };
+
+      rp(options)
+          .then(function (ct) {
+            console.log("Succesfully created ct " + JSON.stringify(ct));
+            resolve(ct);
+          })
+          .catch(function (err) {
+              console.log("Error Creating ct " + name);
+              console.log(err);
+              reject(err);
+          });
+      });
+  }
+
+  function linkCharacterToPlay(characterId, playId){
+    return new Promise(function (resolve, reject) {
+      var options = {
+          method: 'PUT',
+          uri: url + '/api/Characters/' + characterId + '/CharacterPlays/rel/' + playId,
+          headers: {
+              'User-Agent': 'Request-Promise'
+          },
+          json: true // Automatically parses the JSON string in the response
+      };
+
+      rp(options)
+          .then(function (ccp) {
+            console.log("Succesfully linked Character Play " + JSON.stringify(ccp));
+            resolve(ccp);
+          })
+          .catch(function (err) {
+              console.log("Error  linking Character Play");
+              console.log(err);
+          });
+    });
+  }
+
+  function linkCharacterToTrait(characterId, traitId){
+    return new Promise(function (resolve, reject) {
+      var options = {
+          method: 'PUT',
+          uri: url + '/api/Characters/' + characterId + '/CharacterTraits/rel/' + traitId,
+          headers: {
+              'User-Agent': 'Request-Promise'
+          },
+          json: true // Automatically parses the JSON string in the response
+      };
+
+      rp(options)
+          .then(function (ccp) {
+            console.log("Succesfully linked Character Play " + JSON.stringify(ccp));
+            resolve(ccp);
+          })
+          .catch(function (err) {
+              console.log("Error  linking Character Play");
+              console.log(err);
+          });
+    });
+  }
+
+  function addCharacterPlay(characterId, name, desc, cost, range, zone, sus, opt){
+    return new Promise(function (resolve, reject) {
+      getCharacterPlay(name).then(function(existingCharacterPlay){
+        if(existingCharacterPlay.length){
+          console.log("found cp " + existingCharacterPlay[0].id);
+          linkCharacterToPlay(characterId, existingCharacterPlay[0].id).then(resolve);
+        } else{
+          createNewCharaterPlay(name, desc, cost, range, zone, sus, opt)
+            .then(function(play){
+              linkCharacterToPlay(characterId, play.id).then(resolve);
+            });
+        }
+      });
+    });
+  };
+
+  function addCharacterTrait(characterId, name, desc, stip){
+    return new Promise(function (resolve, reject) {
+      getCharacterTrait(name).then(function(existingCharacterTrait){
+        if(existingCharacterTrait.length){
+          console.log("found ct " + existingCharacterTrait[0].id);
+          linkCharacterToTrait(characterId, existingCharacterTrait[0].id).then(resolve);
+        } else{
+          createNewCharaterTrait(name, desc, stip)
+            .then(function(trait){
+              linkCharacterToTrait(characterId, trait.id).then(resolve);
+            });
+        }
+      });
+    });
+  }
+
+  function addCharacter(character){
+    return new Promise(function (resolve, reject) {
+      getTeam(character.Team).then(function(team){
+
+        var characterInsert = {
+          "Name": character.Name,
+          "MeleeZone": character.MeleeZone,
+          "Jog": character.Jog,
+          "Sprint": character.Sprint,
+          "TAC": character.Tac,
+          "KickDice": character.KickDice,
+          "KickLength": character.KickLength,
+          "Defense": character.Defense,
+          "Armor": character.Armor,
+          "InfluenceStart": character.InfluenceStart,
+          "InfluenceMax": character.InfluenceMax,
+          "IconUrl": character.Name,
+          "Health": character.Health,
+          "IcySponge": character.IcySponge,
+          "TeamId": team.id,
+          "Size": character.Size,
+          "Season": character.Season,
+          "Keywords": character.Keywords
+        };
+
+        var options = {
+            method: 'POST',
+            uri: url + '/api/characters',
+            headers: {
+                'User-Agent': 'Request-Promise'
+            },
+            body: characterInsert,
+            json: true // Automatically parses the JSON string in the response
+        };
+
+        rp(options)
+          .then(function (c) {
+            console.log(c);
+            resolve(c);
+          })
+          .catch(function (err) {
+              console.log("Error Creating Character " + character);
+              console.log(err);
+              resolve();
+          });
+    });
+  });
+
+  }
+
+  function addCharacterPlayBooks(character, characterId){
+    return new Promise(function (resolve, reject) {
+      async.timesLimit(
+        9,
+        1,
+        function(n, next){
+            let i = n + 1;
+            if(character["PB" + i]){
+              addPlaybookColumn(character["PB" + i], i, characterId).then(next);
+            }
+            else
+            {
+              next();
+            }
+        },
+        resolve);
+    });
+  }
+
+  function addCharacterPlays(character, characterId){
+    return new Promise(function (resolve, reject) {
+      async.timesLimit(
+        3,
+        1,
+        function(n, innernext){
+          console.log("======" + n);
+          let i = n + 1;
+          if(character["CP" + i + "Name"]){
+            addCharacterPlay(characterId, character["CP" + i + "Name"],
+              character["CP" + i + "Description"],
+              character["CP" + i + "CST"],
+              character["CP" + i + "RNG"],
+              character["CP" + i + "ZON"],
+              character["CP" + i + "SUS"],
+              character["CP" + i + "OPT"])
+              .then(function(){
+                innernext();
+              });
+          } else {
+            console.log("Did not find CP" + i + "Name");
+            innernext();
+          }
+        },
+        resolve);
+    });
+  }
+
+  function addCharacterTraits(character, characterId){
+    return new Promise(function (resolve, reject) {
+      async.timesLimit(
+        4,
+        1,
+        function(n, traitnext){
+          let i = n + 1;
+
+          if(character["CT" + i + "Name"]){
+
+            addCharacterTrait(characterId,
+              character["CT" + i + "Name"],
+              character["CT" + i + "Desc"],
+              character["CT" + i + "Stip"])
+              .then(function(){
+                console.log(">>>>>>" + i);
+
+                traitnext();
+              });
+          } else {
+            console.log("Did not find CT" + i + "Name");
+            traitnext();
+          }
+        },
+        resolve);
+    });
+  }
+
+  function importCharacter(character){
+    return new Promise(function (resolve, reject) {
+        addCharacter(character)
+        .then(function(createdCharacter){
+          console.log("test");
+          console.log(createdCharacter);
+          var characterId = createdCharacter.id;
+
+          addCharacterPlayBooks(character, characterId).then(function(){
+            addCharacterPlays(character, characterId).then(function(){
+              addCharacterTraits(character,characterId).function(resolve);
+            })
+          });
+        });
+    });
+  };
+
+  getPlaybookActions().then(function(pba){
+    playbookactions = pba;
+    async.eachSeries(characters, function(character, callback){
+      importCharacter(character).then(callback);
+    });
+  });
 }

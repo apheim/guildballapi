@@ -1,6 +1,6 @@
 {
-  "name": "Team",
-  "plural": "Teams",
+  "name": "Trait",
+  "plural": "Traits",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
@@ -11,9 +11,11 @@
       "type": "string",
       "required": true
     },
-    "IconUrl": {
-      "type": "string",
-      "required": true
+    "Description": {
+      "type": "string"
+    },
+    "Stipulation": {
+      "type": "string"
     }
   },
   "validations": [],

@@ -7,31 +7,28 @@
     "validateUpsert": true
   },
   "properties": {
-    "Name": {
-      "type": "string",
+    "CharacterId": {
+      "type": "number",
       "required": true
     },
-    "Description": {
-      "type": "string"
-    },
-    "Cost": {
-      "type": "string"
-    },
-    "Range": {
-      "type": "string"
-    },
-    "Zone": {
-      "type": "string"
-    },
-    "Sustain": {
-      "type": "boolean"
-    },
-    "OPT": {
-      "type": "boolean"
+    "PlayId": {
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "Character": {
+      "type": "belongsTo",
+      "model": "Character",
+      "foreignKey": "CharacterId"
+    },
+    "Play": {
+      "type": "belongsTo",
+      "model": "Play",
+      "foreignKey": "PlayId"
+    }
+  },
   "acls": [],
   "methods": {}
 }

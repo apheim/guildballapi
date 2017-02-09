@@ -1,6 +1,6 @@
 {
-  "name": "Team",
-  "plural": "Teams",
+  "name": "Keyword",
+  "plural": "Keywords",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
@@ -8,10 +8,6 @@
   },
   "properties": {
     "Name": {
-      "type": "string",
-      "required": true
-    },
-    "IconUrl": {
       "type": "string",
       "required": true
     }

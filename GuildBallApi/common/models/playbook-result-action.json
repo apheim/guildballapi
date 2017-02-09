@@ -11,11 +11,11 @@
       "type": "number",
       "required": true
     },
-    "PlaybookActionId":{
+    "PlaybookActionId": {
       "type": "number",
       "required": true
     },
-    "PlaybookResultId":{
+    "PlaybookResultId": {
       "type": "number",
       "required": true
     }

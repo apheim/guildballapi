@@ -1,0 +1,37 @@
+{
+  "name": "Play",
+  "plural": "Plays",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Description": {
+      "type": "string"
+    },
+    "Cost": {
+      "type": "string"
+    },
+    "Range": {
+      "type": "string"
+    },
+    "Zone": {
+      "type": "string"
+    },
+    "Sustain": {
+      "type": "boolean"
+    },
+    "OPT": {
+      "type": "boolean"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
