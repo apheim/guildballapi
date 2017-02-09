@@ -16,7 +16,10 @@
     },
     "Stipulation": {
       "type": "string"
-    }
+    },
+    "Type":{
+      "type": "string"
+    } 
   },
   "validations": [],
   "relations": {},

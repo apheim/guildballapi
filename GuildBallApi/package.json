@@ -27,5 +27,8 @@
     "url": ""
   },
   "license": "UNLICENSED",
-  "description": "GuildBallApi"
+  "description": "GuildBallApi",
+  "engines": {
+    "node": "6.9.1"
+  }
 }

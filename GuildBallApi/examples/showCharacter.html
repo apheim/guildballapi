@@ -6,6 +6,7 @@
       <link rel="stylesheet" href="showCharacter.css">
       <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/css/tether.min.css" />
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   </head>
   <body>
     <div class="dropdown">
@@ -21,7 +22,7 @@
       <div data-bind="with:selectedCharacterData()">
         <h1 data-bind="html:Name"></h1>
         <table class="table table-bordered">
-          <tr><th>MOV</th><th>TAC</th><th>KICK</th><th>DEF</th><th>ARM</th><th>INF</th><th>Melee</th><th>Health</th><th>Icy Sponge</th></tr>
+          <tr><th>MOV</th><th>TAC</th><th>KICK</th><th>DEF</th><th>ARM</th><th>INF</th><th>Melee</th><th>Health</th><th>Icy Sponge</th><th>Size</th><th>Season</th></tr>
           <tr>
             <td data-bind="html: Jog + '/' + Sprint"></td>
             <td data-bind="html: TAC"></td>
@@ -32,6 +33,8 @@
             <td data-bind="html: MeleeZone"></td>
             <td data-bind="html: Health"></td>
             <td data-bind="html: IcySponge"></td>
+            <td data-bind="html: Size"></td>
+            <td data-bind="html: Season"></td>
           </tr>
         </table>
 
@@ -44,7 +47,43 @@
               </div>
             </div>
           </div>
+
+        <h2>Character Plays</h2>
+        <table class="table table-bordered">
+          <tr><th>Play</th><th>Cost</th><th>Range</th><th>Zone</th><th>SUS</th><th>OPT</th></tr>
+          <!-- ko foreach: CharacterPlays -->
+          <tr>
+            <td>
+              <h4 data-bind="html:Name"></h4>
+              <span data-bind="html:Description"></span>
+            </td>
+            <td data-bind="html: Cost"></td>
+            <td data-bind="html: Range"></td>
+            <td data-bind="html: Zone"></td>
+            <td>
+                <i data-bind="visible: Sustain" class="fa fa-check" aria-hidden="true"></i>
+                <i data-bind="visible: !Sustain" class="fa fa-times" aria-hidden="true"></i>
+            </td>
+            <td >
+                <i data-bind="visible: OPT" class="fa fa-check" aria-hidden="true"></i>
+                <i data-bind="visible: !OPT" class="fa fa-times" aria-hidden="true"></i>
+            </td>
+          </tr>
+          <!-- /ko -->
         </table>
+
+        <h2>Character Traits</h2>
+        <div data-bind="foreach: CharacterTraits">
+            <h4><span data-bind="html:Name"></span><strong data-bind="visible: Stipulation">[<span data-bind="html:Stipulation"></span>]</strong></h4>
+            <span data-bind="html:Description"></span>
+        </div>
+
+        <h2>Keywords</h2>
+        <ul data-bind="foreach: Keywords">
+            <li data-bind="html:Name"></li>
+        </ul>
+      </div>
+    </div>
     </div>
   </body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-min.js"></script>

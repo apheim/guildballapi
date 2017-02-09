@@ -14,7 +14,7 @@ function getCharacters(){
 
 
 function getCharacter(id){
-  fetch('/api/Characters/' + id + '?filter[include]=Team&filter[include][PlayBookColumns][PlaybookResults][PlaybookResultActions]=Action',
+  fetch('/api/Characters/' + id + '?filter={"include": ["Team",  "Keywords", "CharacterPlays", "CharacterTraits",  { "PlayBookColumns" :  {"PlaybookResults" : {   "PlaybookResultActions" : "Action"    } }}]}',
   {
   	method: 'get'
   }).then(function(response) {

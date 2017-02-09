@@ -47,14 +47,6 @@
     "dataSource": "db",
     "public": true
   },
-  "CharacterPlay": {
-    "dataSource": "db",
-    "public": true
-  },
-  "CharacterTrait": {
-    "dataSource": "db",
-    "public": true
-  },
   "PlaybookResult": {
     "dataSource": "db",
     "public": true
